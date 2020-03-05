@@ -21,96 +21,129 @@ linkedList::~linkedList(){
 // Creates the initial deck of cards all in order
 void linkedList::create(){
     // Add Spades to deck
+    node * temp;
+
     for(int i = 1; i < 14; i++){
-       node * temp = new node(i,"Spades");
-       insert(temp, head);
+        temp = new node(i,"Spades");
+        insert(temp, head);
     }
-
-
+/*
     // Add Diamonds to deck
-    for(int i = 0; i < 14; i++){
-       node * temp = new node(i,"Diamonds");
-       insert(temp, head);
+    for(int i = 1; i < 14; i++){
+        temp = new node(i,"Diamonds");
+        insert(temp, head);
     }
 
     // Add Clubs to deck
-    for(int i = 0; i < 14; i++){
-       node * temp = new node(i,"Clubs");
-       insert(temp, head);
+    for(int i = 1; i < 14; i++){
+        temp = new node(i,"Clubs");
+        insert(temp, head);
     }
 
     // Add Hearts to deck
-    for(int i = 0; i < 14; i++){
-       node * temp = new node(i,"Hearts");
-       insert(temp, head);
-    }
+    for(int i = 1; i < 14; i++){
+        temp = new node(i,"Hearts");
+        insert(temp, head);
+    }*/
 
-    //setTail(head);
-    //tail->setNext(head);
+    // Finish Circular Linked List
+    cout << "Linking tail to head..." << endl;
+    setTail(head);
 }
 
-/*void linkedList::setTail(node * head){
-    if(!head)
+void linkedList::setTail(node * cur){
+    if(!cur)
         return;
 
-    else if(head->getNext == NULL)
-        tail = head;
-    
+    else if(cur->getNext() == NULL){
+        tail = cur;
+        tail->setNext(head);
+    }
     else 
-        setTail(head->getNext());
-}*/
+        setTail(cur->getNext());
+}
 
-void linkedList::removeNode(node *& toDel, node *& cur){
+void linkedList::removeCard(node *& toDel, node *& cur){
     // No list
     if(!cur)
         return;
-    if(cur == toDel){
-        cur = toDel->getNext();
-        delete toDel;
+    // First item is the delete item and only item in list
+    else if(cur == toDel && cur->getNext() == cur){
+        delete cur;
+        tail = NULL;
+        cur = NULL;
     }
+    // First item is the deletion item but not only item in list
+    else if(cur == toDel && cur->getNext() != cur){
+        if(cur->getNext()->getNext() == cur){
+            tail = cur->getNext();
+            delete cur;
+            cur = NULL;
+        }
+        else{
+            tail = cur->getNext();
+            delete cur;
+            cur = NULL;
+        }
+    }
+    // Next item is the delete item
     else if(cur->getNext() == toDel){
-        cur->setNext(toDel->getNext());
-        delete toDel;
+        if(cur->getNext()->getNext() == cur){
+            tail = cur;
+            delete cur->getNext();
+            cur->setNext(cur);
+        }
+        else{
+            node *temp = cur->getNext()->getNext();
+            delete cur->getNext();
+            cur->setNext(temp);
+        }
     }
+    // Traverse
     else
-        removeNode(toDel,cur->getNext());
+        removeCard(toDel,cur->getNext());
     
 }
 
 void linkedList::shuffle(){
-        
-        
         node * shuffledDeck;
         shuffle(head, shuffledDeck);
-
-        //copy(temp,head);                  // Add random card to new deck
-        //node * copy = new node(temp);
-        //if(!head){
-        //    head = copy;
-        //}
-        //    head->setNext(copy);
-
-        //removeNode(temp,head);                          // Remove random card from old deck
 }
 
 void linkedList::shuffle(node *& head, node *& shuffledDeck){
     node * find;
     srand((unsigned int) time (NULL)); //activates the generator
+    node * copyHead = head;
+    head = NULL;
+    tail->setNext(copyHead);
+
+    int counter = 0;
 
     // Go through each card in old deck, and randomly add it to end of new deck
-    for(int i = 0; i < 52; i++){
-        node * copyHead = head;
-        int randomNum = rand() % (53-i);            // Generate random number between 0-52
+    for(int i = 0; i < 12; i++){
+        
+        int randomNum = rand() % (13);            // Generate random number between 0-52
         cout << randomNum << endl;
         find = traverse(randomNum,copyHead);//->getNext(); // Get that random card
         cout << "CARD FOUND" << endl;
         find->display(find);
 
         cout << "COPYING NODE" << endl;
-        copy(find,shuffledDeck);
+        copy(find,head);
         cout << "NODE COPIED" << endl;
+        cout << endl;
+
+        cout << "REMOVING NODE" << endl;
+        removeCard(find,copyHead);
+        cout << "NODE REMOVED" << endl << endl;
+        counter++;
     }
-    head = shuffledDeck;
+    cout << "\nCards copied: " << counter << endl;
+
+    // Finish Circular Linked List
+    cout << "Linking tail to head..." << endl;
+    setTail(head);
+    //head = shuffledDeck;
 }
 
 node * linkedList::traverse(int num, node * cur){
@@ -126,23 +159,21 @@ node * linkedList::traverse(int num, node * cur){
 // Recursive insert function
 void linkedList::insert(node *& toAdd, node *& cur){
     // No List
-    if(!cur){
-        // Set initial head of list
-        cur = toAdd;
-        //cur->setNext(NULL);
-    }
+    if(!cur) 
+        cur = toAdd;  // Set initial head of list
+    
     // Found end of list
-    else if(cur->getNext() == NULL){
+    else if(cur->getNext() == NULL)
         cur->setNext(toAdd);
-        //toAdd->setNext(NULL);
-    }
     // Keep Traversing to find end of list
-    else{
+    else
         insert(toAdd,cur->getNext());
-    }
+    
 }
 
+// Copies a node and adds it to a new list
 void linkedList::copy(node *& toAdd, node *& cur){
+    // Create list if no list
     if(!cur){
         node * temp = new node(toAdd);
         cur = temp;
@@ -151,22 +182,35 @@ void linkedList::copy(node *& toAdd, node *& cur){
     else if(cur->getNext() == NULL){
         node * temp = new node(toAdd);
         cur->setNext(temp);
-        //toAdd->setNext(NULL);
     }
     // Keep Traversing to find end of list
     else{
-        insert(toAdd,cur->getNext());
+        copy(toAdd,cur->getNext());
     }
 }
 
 // Displays all cards in the deck
 void linkedList::displayAll(){
+    //int counter = 0;
+
+    // List is Empty
     if(!head)
         cout << "Empty List!" << endl;
     
+    // Display First item
     node * temp = head;
-    while(temp){
-        temp->display(temp);
+    temp->display(temp);
+    //counter++;
+
+    //cout << counter << endl << endl;
+
+    // Increment and display until at start
+    while(temp->getNext() != head){
         temp = temp->getNext();
+
+        temp->display(temp);
+        //counter++;
+        //cout << counter << endl << endl;
     }
+    //cout << "\nCards Displayed: " << counter << endl;
 }

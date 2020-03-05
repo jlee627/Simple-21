@@ -8,11 +8,11 @@ class linkedList{
         ~linkedList();
 
         void insert(node *& toAdd, node *& head);   // Inserts the hand to list
-        void copy(node *& toAdd, node *& head);   // Inserts the hand to list
+        void copy(node *& toAdd, node *& head);     // Inserts the hand to list
 
         void displayAll();                             // Display Cards
-        void removeNode(node *& toDel, node *& head);
-        //void setTail(node * head);
+        void removeCard(node *& toDel, node *& head);
+        void setTail(node * head);
         //void removeAll(node * head);
 
         node * traverse(int num, node * cur);      // Recursive traverse function

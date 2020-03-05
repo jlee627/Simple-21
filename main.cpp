@@ -20,6 +20,8 @@ int main(){
         
     cout << "Initial Starting Deck" << endl ;
     deck.create();
+
+    // Menu
     do{
         cout << "1) Display Deck" << endl;
         cout << "2) Shuffle Deck" << endl;
