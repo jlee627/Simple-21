@@ -22,5 +22,6 @@ class node{
         node * next;
         int num;
         string suit;
+        bool visited;
         
 };

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-linkedList::linkedList():head(NULL),tail(NULL)
+linkedList::linkedList():head(NULL)//,tail(NULL)
 {}
 
 linkedList::~linkedList(){
@@ -47,11 +47,11 @@ void linkedList::create(){
     }*/
 
     // Finish Circular Linked List
-    cout << "Linking tail to head..." << endl;
-    setTail(head);
+    //cout << "Linking tail to head..." << endl;
+    //setTail(head);
 }
 
-void linkedList::setTail(node * cur){
+/*void linkedList::setTail(node * cur){
     if(!cur)
         return;
 
@@ -62,28 +62,57 @@ void linkedList::setTail(node * cur){
     else 
         setTail(cur->getNext());
 }
+*/
 
 void linkedList::removeCard(node *& toDel, node *& cur){
     // No list
     if(!cur)
         return;
     // First item is the delete item and only item in list
-    else if(cur == toDel && cur->getNext() == cur){
+    if(cur == toDel && cur->getNext() == NULL){
+        cout << "DELETING " << cur->getNum() << " of " << cur->getSuit() << endl << endl;
         delete cur;
-        tail = NULL;
         cur = NULL;
+        return;
     }
+
+    if(cur == toDel){
+        //tail->setNext(cur->getNext());
+        cout << "DELETING " << cur->getNum() << " of " << cur->getSuit() << endl << endl;
+
+        delete cur;
+        //cur = tail->getNext();
+    }
+
+    while(cur->getNext() != NULL && cur->getNext() != toDel){
+        cur = cur->getNext();
+    }
+
+    if(cur->getNext() == toDel){
+        node * temp = cur->getNext();
+        cur->setNext(temp->getNext());
+
+        cout << "DELETING " << temp->getNum() << " of " << temp->getSuit() << endl;
+
+        delete temp;
+        temp = NULL;
+    }
+    else{
+        cout << "--- Could not find "<< toDel->getNum() << " of " << toDel->getSuit() << " in removeCard()." << endl;
+    }
+    /*
     // First item is the deletion item but not only item in list
     else if(cur == toDel && cur->getNext() != cur){
         if(cur->getNext()->getNext() == cur){
             tail = cur->getNext();
             delete cur;
-            cur = NULL;
+            cur = tail;
         }
         else{
-            tail = cur->getNext();
+            node * temp = cur->getNext();
             delete cur;
-            cur = NULL;
+            cur = temp;
+            tail->setNext(cur);
         }
     }
     // Next item is the delete item
@@ -102,11 +131,11 @@ void linkedList::removeCard(node *& toDel, node *& cur){
     // Traverse
     else
         removeCard(toDel,cur->getNext());
-    
+    */
 }
 
 void linkedList::shuffle(){
-        node * shuffledDeck;
+        node * shuffledDeck; // not using yet
         shuffle(head, shuffledDeck);
 }
 
@@ -115,43 +144,42 @@ void linkedList::shuffle(node *& head, node *& shuffledDeck){
     srand((unsigned int) time (NULL)); //activates the generator
     node * copyHead = head;
     head = NULL;
-    tail->setNext(copyHead);
+    //tail->setNext(copyHead);
 
-    int counter = 0;
+    int counter = 1;
 
     // Go through each card in old deck, and randomly add it to end of new deck
     for(int i = 0; i < 12; i++){
         
-        int randomNum = rand() % (13);            // Generate random number between 0-52
+        int randomNum = rand() % (12);            // Generate random number between 0-52
         cout << randomNum << endl;
         find = traverse(randomNum,copyHead);//->getNext(); // Get that random card
-        cout << "CARD FOUND" << endl;
+        //cout << "CARD FOUND" << endl;
         find->display(find);
 
-        cout << "COPYING NODE" << endl;
+        //cout << "COPYING NODE" << endl;
         copy(find,head);
-        cout << "NODE COPIED" << endl;
+        //cout << "NODE COPIED" << endl;
         cout << endl;
 
         cout << "REMOVING NODE" << endl;
         removeCard(find,copyHead);
-        cout << "NODE REMOVED" << endl << endl;
+        cout << "CARD NUMBER " << counter << " REMOVED" << endl << endl;
+        displayRemaining(copyHead);
         counter++;
     }
     cout << "\nCards copied: " << counter << endl;
 
-    // Finish Circular Linked List
-    cout << "Linking tail to head..." << endl;
-    setTail(head);
     //head = shuffledDeck;
 }
 
 node * linkedList::traverse(int num, node * cur){
-    if(num == 0 || cur->getNext() == NULL)
+    if(num == 0 || cur == NULL)
         return cur;
 
-    for(int i = 0; i < num; i++){
+    while(num != 0){
         cur = cur->getNext();
+        num--;
     }
     return cur;
 } 
@@ -198,19 +226,44 @@ void linkedList::displayAll(){
         cout << "Empty List!" << endl;
     
     // Display First item
-    node * temp = head;
-    temp->display(temp);
+    //node * temp = head;
+    //temp->display(temp);
     //counter++;
 
     //cout << counter << endl << endl;
 
     // Increment and display until at start
-    while(temp->getNext() != head){
-        temp = temp->getNext();
+    do{
+        head->display(head);
+        head = head->getNext();
 
-        temp->display(temp);
         //counter++;
         //cout << counter << endl << endl;
-    }
+    }while(head != NULL);
+    //cout << "\nCards Displayed: " << counter << endl;
+}
+
+// Displays all cards in the deck
+void linkedList::displayRemaining(node * remainingDeck){
+    //int counter = 0;
+
+    // List is Empty
+    if(!remainingDeck)
+        cout << "Empty List!" << endl;
+    
+    // Display First item
+    //node * temp = remainingDeck;
+    //temp->display(temp);
+    //counter++;
+
+    //cout << counter << endl << endl;
+
+    // Increment and display until at start
+    do{
+        remainingDeck->display(remainingDeck);
+        remainingDeck = remainingDeck->getNext();
+        //counter++;
+        //cout << counter << endl << endl;
+    }while(remainingDeck->getNext() != NULL);
     //cout << "\nCards Displayed: " << counter << endl;
 }

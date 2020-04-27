@@ -7,6 +7,7 @@ node::node(int toNum,string toSuit){
         num = toNum;
         suit = toSuit;
         next = NULL;
+        visited = false;
 }
 
 node::node(node * toAdd){
@@ -14,6 +15,7 @@ node::node(node * toAdd){
         num = toAdd->num;
         suit = toAdd->suit;
         next = NULL;
+        visited = false;
 }
 
 node::~node(){
